@@ -11,6 +11,15 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
 
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, clap::ValueEnum, Ord, Debug)]
+enum SourceType {
+    Book,
+    Manpage,
+    Mdbook,
+    Tealdeer,
+    Code,
+}
+
 /// CLI arguments
 #[derive(Parser, Debug)]
 #[command(name = "awful_dataset_builder")]
@@ -25,6 +34,10 @@ struct Args {
     /// Start processing file from this chunk
     #[arg(short, long)]
     start: usize,
+    /// Source type
+    #[clap(value_enum)]
+    #[arg(long)]
+    source_type: SourceType,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -44,12 +57,151 @@ struct ExamQuestions {
     pub finalExamQuestion3: Option<String>,
 }
 
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, Serialize)]
+struct MdbookQuestions {
+    pub prompt: Option<String>,
+    pub documentationQuestion1: Option<String>,
+    pub documentationQuestion2: Option<String>,
+    pub documentationQuestion3: Option<String>,
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, Serialize)]
+struct ManpageQuestions {
+    pub prompt: Option<String>,
+    pub manpageQuestion1: Option<String>,
+    pub manpageQuestion2: Option<String>,
+    pub manpageQuestion3: Option<String>,
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, Serialize)]
+struct TealdeerQuestions {
+    pub prompt: Option<String>,
+    pub tealdeerQuestion1: Option<String>,
+    pub tealdeerQuestion2: Option<String>,
+    pub tealdeerQuestion3: Option<String>,
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, Serialize)]
+struct CodeQuestions {
+    pub prompt: Option<String>,
+    pub codeQuestion1: Option<String>,
+    pub codeQuestion2: Option<String>,
+    pub codeQuestion3: Option<String>,
+}
+
+enum AnyQuestions {
+    Book(Vec<ExamQuestions>),
+    Mdbook(Vec<MdbookQuestions>),
+    Manpage(Vec<ManpageQuestions>),
+    Tealdeer(Vec<TealdeerQuestions>),
+    Code(Vec<CodeQuestions>),
+}
+
+impl AnyQuestions {
+    fn as_question_vec(&self) -> Vec<&dyn QuestionSet> {
+        match self {
+            AnyQuestions::Book(vec) => vec.iter().map(|x| x as &dyn QuestionSet).collect(),
+            AnyQuestions::Mdbook(vec) => vec.iter().map(|x| x as &dyn QuestionSet).collect(),
+            AnyQuestions::Manpage(vec) => vec.iter().map(|x| x as &dyn QuestionSet).collect(),
+            AnyQuestions::Tealdeer(vec) => vec.iter().map(|x| x as &dyn QuestionSet).collect(),
+            AnyQuestions::Code(vec) => vec.iter().map(|x| x as &dyn QuestionSet).collect(),
+        }
+    }
+}
+
+trait QuestionSet {
+    fn get_prompt(&self) -> Option<&String>;
+    fn get_question1(&self) -> Option<&String>;
+    fn get_question2(&self) -> Option<&String>;
+    fn get_question3(&self) -> Option<&String>;
+}
+
+impl QuestionSet for ExamQuestions {
+    fn get_prompt(&self) -> Option<&String> {
+        self.prompt.as_ref()
+    }
+    fn get_question1(&self) -> Option<&String> {
+        self.finalExamQuestion1.as_ref()
+    }
+    fn get_question2(&self) -> Option<&String> {
+        self.finalExamQuestion2.as_ref()
+    }
+    fn get_question3(&self) -> Option<&String> {
+        self.finalExamQuestion3.as_ref()
+    }
+}
+
+impl QuestionSet for MdbookQuestions {
+    fn get_prompt(&self) -> Option<&String> {
+        self.prompt.as_ref()
+    }
+    fn get_question1(&self) -> Option<&String> {
+        self.documentationQuestion1.as_ref()
+    }
+    fn get_question2(&self) -> Option<&String> {
+        self.documentationQuestion2.as_ref()
+    }
+    fn get_question3(&self) -> Option<&String> {
+        self.documentationQuestion3.as_ref()
+    }
+}
+
+impl QuestionSet for ManpageQuestions {
+    fn get_prompt(&self) -> Option<&String> {
+        self.prompt.as_ref()
+    }
+    fn get_question1(&self) -> Option<&String> {
+        self.manpageQuestion1.as_ref()
+    }
+    fn get_question2(&self) -> Option<&String> {
+        self.manpageQuestion2.as_ref()
+    }
+    fn get_question3(&self) -> Option<&String> {
+        self.manpageQuestion3.as_ref()
+    }
+}
+
+impl QuestionSet for TealdeerQuestions {
+    fn get_prompt(&self) -> Option<&String> {
+        self.prompt.as_ref()
+    }
+    fn get_question1(&self) -> Option<&String> {
+        self.tealdeerQuestion1.as_ref()
+    }
+    fn get_question2(&self) -> Option<&String> {
+        self.tealdeerQuestion2.as_ref()
+    }
+    fn get_question3(&self) -> Option<&String> {
+        self.tealdeerQuestion3.as_ref()
+    }
+}
+
+impl QuestionSet for CodeQuestions {
+    fn get_prompt(&self) -> Option<&String> {
+        self.prompt.as_ref()
+    }
+    fn get_question1(&self) -> Option<&String> {
+        self.codeQuestion1.as_ref()
+    }
+    fn get_question2(&self) -> Option<&String> {
+        self.codeQuestion2.as_ref()
+    }
+    fn get_question3(&self) -> Option<&String> {
+        self.codeQuestion3.as_ref()
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
     let dir_path = args.dir;
     let conf_file = args.config;
     let start_chunk = args.start;
+    let source_type = args.source_type;
 
     let template = template::load_template("book_question_asker").await?;
 
@@ -66,102 +218,64 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             println!("File: {filename}\n");
 
-            let title = filename.split_terminator('.').collect::<Vec<&str>>()[0].trim();
-            let exam_questions: Result<Vec<ExamQuestions>, serde_yaml::Error> =
-                serde_yaml::from_str(&contents);
+            let title = if source_type == SourceType::Manpage {
+                "manpages"
+            } else {
+                filename.split_terminator('.').collect::<Vec<&str>>()[0].trim()
+            };
 
-            match exam_questions {
-                Ok(questions) => {
-                    let mut count = start_chunk;
-                    let total = questions.len();
+            let any_questions = match source_type {
+                SourceType::Book => AnyQuestions::Book(serde_yaml::from_str(&contents)?),
+                SourceType::Mdbook => AnyQuestions::Mdbook(serde_yaml::from_str(&contents)?),
+                SourceType::Manpage => AnyQuestions::Manpage(serde_yaml::from_str(&contents)?),
+                SourceType::Tealdeer => AnyQuestions::Tealdeer(serde_yaml::from_str(&contents)?),
+                SourceType::Code => AnyQuestions::Code(serde_yaml::from_str(&contents)?),
+            };
 
-                    for exam_questions_row in questions[(start_chunk - 1)..].iter() {
-                        println!("Processing chunk {count}/{total}");
+            let question_rows = any_questions.as_question_vec();
+            let mut count = start_chunk;
+            let total = question_rows.len();
 
-                        if let Some(ref final_exam_question) = exam_questions_row.finalExamQuestion1
-                        {
-                            let reference_text_intro =
-                                if let Some(prompt) = exam_questions_row.prompt.clone() {
-                                    format!("Here is some reference text:\n\n{prompt}")
-                                } else {
-                                    "".to_string()
-                                };
+            for row in question_rows.into_iter().skip(start_chunk - 1) {
+                println!("Processing chunk {count}/{total}");
 
-                            let formatted_question =
-                                format!("{reference_text_intro}\n\n{final_exam_question}");
-                            let answer =
-                                fetch_with_backoff(&config, &formatted_question, &template).await;
+                for (i, question) in [
+                    row.get_question1(),
+                    row.get_question2(),
+                    row.get_question3(),
+                ]
+                .into_iter()
+                .enumerate()
+                {
+                    if let Some(q) = question {
+                        let intro = row
+                            .get_prompt()
+                            .map(|p| format!("Here is some reference text:\n\n{p}"))
+                            .unwrap_or_default();
 
-                            let prompt = final_exam_question.clone();
-                            let _res = write_row_to_file(
-                                formatted_question,
-                                prompt.clone(),
-                                clean_prompt(&prompt),
-                                answer,
-                                title.to_string(),
-                            );
-                        }
+                        let formatted_question = if i == 0 {
+                            format!("{intro}\n\n{q}")
+                        } else {
+                            format!("{intro}\n\n{q}\n\n\\nothink")
+                        };
 
-                        println!("Wrote dataset row for question1");
+                        let answer =
+                            fetch_with_backoff(&config, &formatted_question, &template).await;
 
-                        if let Some(ref final_exam_question) = exam_questions_row.finalExamQuestion2
-                        {
-                            let reference_text_intro =
-                                if let Some(prompt) = exam_questions_row.prompt.clone() {
-                                    format!("Here is some reference text:\n\n{prompt}")
-                                } else {
-                                    "".to_string()
-                                };
+                        let prompt = q.clone();
+                        let _res = write_row_to_file(
+                            formatted_question,
+                            prompt.clone(),
+                            clean_prompt(&prompt),
+                            answer,
+                            title.to_string(),
+                        );
 
-                            let formatted_question = format!(
-                                "{reference_text_intro}\n\n{final_exam_question}\n\n\\nothink"
-                            );
-                            let answer =
-                                fetch_with_backoff(&config, &formatted_question, &template).await;
-
-                            let prompt = final_exam_question.clone();
-                            let _res = write_row_to_file(
-                                formatted_question,
-                                prompt.clone(),
-                                clean_prompt(&prompt),
-                                answer,
-                                title.to_string(),
-                            );
-                        }
-
-                        println!("Wrote dataset row for question2");
-
-                        if let Some(ref final_exam_question) = exam_questions_row.finalExamQuestion3
-                        {
-                            let reference_text_intro =
-                                if let Some(prompt) = exam_questions_row.prompt.clone() {
-                                    format!("Here is some reference text:\n\n{prompt}")
-                                } else {
-                                    "".to_string()
-                                };
-
-                            let formatted_question = format!(
-                                "{reference_text_intro}\n\n{final_exam_question}\n\n\\nothink"
-                            );
-                            let answer =
-                                fetch_with_backoff(&config, &formatted_question, &template).await;
-
-                            let prompt = final_exam_question.clone();
-                            let _res = write_row_to_file(
-                                formatted_question,
-                                prompt.clone(),
-                                clean_prompt(&prompt),
-                                answer,
-                                title.to_string(),
-                            );
-                        }
-
-                        println!("Wrote dataset row for question3");
-
-                        count += 1;
+                        println!("Wrote dataset row for question{}", i + 1);
                     }
                 }
-                _ => println!("Failed to deserialize: {filename}"),
+
+                count += 1;
             }
         };
     }

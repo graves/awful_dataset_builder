@@ -1,5 +1,3 @@
-- prompt: "You are playing the role of a college professor. Here is some text copied from the manpages of the macOS resource `tbtdiagnose`.\n\n\n\nManpage text:\n\ntbtdiagnose(1)\t\t    General Commands Manual\t\ttbtdiagnose(1)\n\nNAME\n     tbtdiagnose - collects diagnostic information to help troubleshoot\n     Thunderbolt issues.\n\nSYNOPSIS\n     tbtdiagnose\n\nDESCRIPTION\n     Use tbtdiagnose to collect diagnostic information to help with\n     investigation of Thunderbolt issues.\n\nmacOS Sierra\t\t       December 7, 2016 \t\t  macOS Sierra"
-  manpageQuestion1: What is the primary purpose of the tbtdiagnose command?
-  manpageQuestion2: How do you use tbtdiagnose to collect diagnostic information for Thunderbolt issues?
-  manpageQuestion3: Can you provide an example of how to run tbtdiagnose on a macOS system?
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:53e3f4d86293a911bd247ee92aba5c49b0bc5f059241de93ab9f7b5f70b2e632
+size 829

@@ -1,5 +1,3 @@
-- prompt: "You are playing the role of a college professor. Here is some text copied from the manpages of the macOS resource `tkmib`.\n\n\n\nManpage text:\n\ntkmib(1)\t\t\t   Net-SNMP\t\t\t      tkmib(1)\n\nNAME\n       tkmib - an interactive graphical MIB browser for SNMP\n\nSYNOPSIS\n       tkmib\n\nDESCRIPTION\n       Simple Network Management Protocol (SNMP) provides a framework for\n       exchange of the management information between the agents (servers) and\n       clients. The Management Information Bases (MIBs) contain a formal\n       description of a set of network objects that can be managed using the\n       SNMP for a particular agent. tkmib is a graphical user interface for\n       browsing the MIBs. It is also capable of sending or retrieving the SNMP\n       management information to/from the remote agents interactively.\n\nV5.6.2.1\t\t\t  16 Nov 2006\t\t\t      tkmib(1)"
-  manpageQuestion1: What is the primary purpose of the tkmib tool?
-  manpageQuestion2: How would you use tkmib to interactively browse the MIBs of a remote SNMP agent?
-  manpageQuestion3: Can you explain how to use tkmib to send an SNMP GET request to retrieve information from a remote network device?
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:1162911074e350aae3bab8c0aea3a49647337e5f6ff150f867f4dda08b450077
+size 1207

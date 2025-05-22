@@ -1,5 +1,3 @@
-- prompt: "You are playing the role of a college professor. Here is some text copied from the manpages of the macOS resource `transparency-sysdiagnose`.\n\n\n\nManpage text:\n\ntransparency-sysdiagnose(1)\t\t\t       General Commands Manual\n\nNAME\n     transparency-sysdiagnose – sysdiagnose information for IDS transparency\n     project\n\nSYNOPSIS\n     gathers sysdiagnose information for transparency\n\nDESCRIPTION\n     Gathers sysdiagnose information for transparency\n\nSEE ALSO\n     a(transparencyd)\n\n\nDarwin\t\t\t\t    4/21/22\t\t\t\tDarwin"
-  manpageQuestion1: What is the primary purpose of the transparency-sysdiagnose command?
-  manpageQuestion2: How would you use transparency-sysdiagnose to collect sysdiagnose information for the IDS transparency project?
-  manpageQuestion3: Can you provide an example of using transparency-sysdiagnose in a command-line context?
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:d199e41bd88e37303097cf18b195883eb321f882c3893c3c3a97f3eada588551
+size 891

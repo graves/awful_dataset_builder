@@ -1,5 +1,3 @@
-- prompt: "You are playing the role of a college professor. Here is some text copied from the manpages of the macOS resource `videosubscriptionsd`.\n\n\n\nManpage text:\n\nvideosubscriptionsd(8)\t    System Manager's Manual\tvideosubscriptionsd(8)\n\nNAME\n     videosubscriptionsd\n\nDESCRIPTION\n     videosubscriptionsd is not meant to be invoked directly.\n\nDarwin\t\t\t\t  11/30/2016\t\t\t\tDarwin"
-  manpageQuestion1: What is the primary purpose of the videosubscriptionsd resource?
-  manpageQuestion2: How would you typically interact with the videosubscriptionsd service without directly invoking it?
-  manpageQuestion3: Can you explain the role of videosubscriptionsd in managing video subscriptions on macOS?
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:a0669623739c95a667c4cd4786913f9428a889cfde2cdac50b5b0b7dda4f8d90
+size 721

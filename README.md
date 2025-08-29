@@ -14,6 +14,20 @@
 '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^' LGB
 ```
 
+```
+λ awful_dataset_builder --help
+Generate final exam questions from YAML book chunks
+
+Usage: awful_dataset_builder --dir <DIR> --config <CONFIG> --start <START> --source-type <SOURCE_TYPE>
+
+Options:
+  -d, --dir <DIR>                  Path to directory of .yaml book files
+  -c, --config <CONFIG>            Configuration file
+  -s, --start <START>              Start processing file from this chunk
+      --source-type <SOURCE_TYPE>  Source type [possible values: book, manpage, mdbook, tealdeer, code]
+  -h, --help                       Print help
+```
+
 ---
 
 ## 🧠 **What It Does**  

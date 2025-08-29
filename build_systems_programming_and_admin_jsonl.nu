@@ -31,7 +31,7 @@ def main [] {
       } | to json -r
     }
     | str join (char nl)
-    | save SystemsProgrammingAndAdministration_chat.jsonl -f
+    | save SystemsProgrammingAndAdministration.jsonl -f
 
-    print "Chat fine-tuning JSONL saved as: SystemsProgrammingAndAdministration_chat.jsonl"
+    print "Chat fine-tuning JSONL saved as: SystemsProgrammingAndAdministration.jsonl"
 }

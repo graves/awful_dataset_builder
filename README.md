@@ -61,7 +61,7 @@ Output:
 
 ---
 
-## 🧪 **Supported Sources**  
+## 📚 **Supported Sources**  
 | Source Type | Description |
 |-------------|-------------|
 | `Book`      | YAML files with questions generated from book excerpts (e.g., `"Title: Math for Dummies"`) |

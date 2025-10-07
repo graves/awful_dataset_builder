@@ -102,4 +102,4 @@ Output:
 ## ✨ **Final Thoughts**  
 Building datasets is the most dificult, time-consuming labor involved with the Synthetic Finetuning of LLMs. A well thought out workflow using [Awful Book Sanitizer](https://github.com/graves/awful_book_sanitizer), [Awful Knowledge Synthesizer](https://github.com/graves/awful_knowledge_synthesizer), and [Awful Dataset Builder](https://github.com/graves/awful_dataset_builder) will allow you to experiment with your wildest curiosities about human language, on the cutting edge of technological advancement for as long as written language exists 🎉  
 
-You can find Open Source datasets I've generated using these tools on [Huggingface](https://huggingface.co/dougiefresh/datasets)
+You can find Open Source datasets I've generated using these tools on [Huggingface](https://huggingface.co/dougiefresh/datasets).
